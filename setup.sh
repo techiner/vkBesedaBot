@@ -7,8 +7,8 @@ apt update && apt upgrade -y
 apt install python3 python3-pip python3-venv git -y
 
 # Создание папки бота
-mkdir -p ~/bot
-cd ~/bot
+mkdir -p ~/vkBesedaBot
+cd ~/vkBesedaBot
 
 # Виртуальное окружение
 python3 -m venv venv
@@ -26,8 +26,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/root/bot
-ExecStart=/root/bot/venv/bin/python3 /root/bot/bot.py
+WorkingDirectory=/root/vkBesedaBot
+ExecStart=/root/vkBesedaBot/venv/bin/python3 /root/vkBesedaBot/main.py
 Restart=always
 RestartSec=10s
 
