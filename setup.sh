@@ -1,18 +1,18 @@
 #!/bin/bash
 
 # Обновление системы
-apt update && apt upgrade -y
+sudo apt update && sudo apt upgrade -y
 
 # Установка Python и зависимостей
-apt install python3 python3-pip python3-venv git -y
+sudo apt install python3 python3-pip python3-venv git -y
 
 # Создание папки бота
 mkdir -p ~/vkBesedaBot
 cd ~/vkBesedaBot
 
 # Виртуальное окружение
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 
 # Установка зависимостей (если есть requirements.txt)
 pip install -r requirements.txt
