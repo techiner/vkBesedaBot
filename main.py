@@ -17,10 +17,20 @@ def sender(id, text):
     vk_session.method('messages.send', {'chat_id': id, 'message': text, 'random_id': 0})
 
 def load_phrases():
+    filename = "phrases.json"
+    # Если файла нет, создаём его с пустой JSON-структурой
+    if not os.path.exists(filename):
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump({}, f)
+        return {}
+    
     try:
-        with open("phrases.json", "r", encoding="utf-8") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             return json.load(f)
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
+        # Если файл есть, но пустой или битый — перезаписываем
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump({}, f)
         return {}
 
 def find_phrase(text, phrase_database):
