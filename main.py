@@ -6,15 +6,18 @@ from enum import Enum
 from dotenv import load_dotenv
 import os
 import re
+from groq import Groq
+
 
 load_dotenv()  # Ищет .env в текущей папке
 TOKEN = os.getenv("TOKEN")
+GROUP_ID = os.getenv("GROUP_ID")
 PHRASES_FILENAME = 'phrases.json'
 
 # from config import TOKEN
 
 vk_session = vk_api.VkApi(token=TOKEN)
-longpoll = VkBotLongPoll(vk_session, 235215404)
+longpoll = VkBotLongPoll(vk_session, GROUP_ID)
 
 def sender(id, text):
     vk_session.method('messages.send', {'chat_id': id, 'message': text, 'random_id': 0})
@@ -103,6 +106,17 @@ for event in longpoll.listen():
                                 del phrase_database[delete_phrase]
                                 save_phrases(PHRASES_FILENAME, phrase_database)
                                 sender(id, f'Больше на "{delete_phrase}" не триггерюсь')
+                    if text.startswith('\\окейалеша'):
+                        ai_prompt = text[len('\\окейалеша'):].strip()
+                        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+                        resp = client.chat.completions.create(
+                            model="llama-3.1-8b-instant",
+                            messages=[
+                                {"role": "system", "content": "Тебя зовут Алёша. Ты высокомерный эгоист. Твоему высокомерию нет предела и ты хочешь в каждом предложении(это важно, либо каждое второе предложение) сказать насколько ты хорош. Восхваляй себя разными формулировками, изощряйся как можешь, ведь ты самый высокомерный на свете"},
+                                {"role": "user", "content": ai_prompt}
+                            ]
+                        )
+                        sender(id, resp.choices[0].message.content)
                 else:
                     phrase_database = load_phrases(PHRASES_FILENAME)
                     answer = find_phrase(text, phrase_database)
