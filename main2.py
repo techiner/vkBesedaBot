@@ -1,23 +1,11 @@
 import vk_api 
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType 
-import shlex
-import json
-from enum import Enum
+from vk_api.bot_longpoll import VkBotLongPoll
 from dotenv import load_dotenv
-import os
-import commands
-from commands import Commands 
-from longpoll import longpoll_server
-import utils
 
 load_dotenv()  # Ищет .env в текущей папке
-TOKEN = os.getenv("TOKEN")
-GROUP_ID = int(os.getenv("GROUP_ID"))
+TOKEN = "vk1.a.nbQQI73t4T9Vqj5HPg3SE5L_LBfrRgxMtNUKVlZu5BsgIid9WADnutsW04OsnvsLnFjq-9cAxSNODA-_n0BDktxZ6aYuOohDqExaG2o8eW7dgdWRpdt_6C-Mm7CMUulQEHYWPjApzCtnt8QvC_Idslkwpapsa2epglXT08VZsimYlWEFykMVhuDOBd_-rZgjR5puCxMGmxiCnr6qf660xg"
+GROUP_ID = 235262298
 PHRASES_FILENAME = 'phrases.json'
-
-# перед longpoll
-# import hot_reload
-# hot_reload.start()
 
 try:
     vk_session = vk_api.VkApi(token=TOKEN)
@@ -27,5 +15,3 @@ try:
 except Exception as e:
     print(f"❌ Ошибка при инициализации LongPoll: {e}")
     exit(1)
-
-longpoll_server(longpoll, vk_session)
