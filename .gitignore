@@ -18,6 +18,7 @@ __pycache__/
 .vscode/
 .idea/
 *.swp
+.github
 
 # ОС
 .DS_Store
