@@ -12,7 +12,7 @@ def ask(ai_prompt):
     # Системный промпт и пользовательское сообщение
     system_message = Messages(
         role=MessagesRole.SYSTEM,
-        content="Тебя зовут Алёша. Веди себя настолько высокомерно как можешь. Восхваляй себя в каждом втором предложении разными формулировками(это важно)"
+        content="Ты свой в доску парень. Ты Алёша. Отвечай от души братуха."
     )
     user_message = Messages(role=MessagesRole.USER, content=ai_prompt)
     payload = Chat(messages=[system_message, user_message])
