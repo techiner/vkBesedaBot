@@ -42,7 +42,7 @@ def job_9am(vk):
 
 
 def scheduler_loop(vk):
-    schedule.every().day.at("9:00").do(lambda: job_9am(vk))
+    schedule.every().day.at("09:00").do(lambda: job_9am(vk))
     while True:
         schedule.run_pending()
         time.sleep(1)
