@@ -3,6 +3,7 @@
 
 # Тестовые данные
 phrases.json
+comedy_subscription.json
 
 # Виртуальное окружение
 .venv/

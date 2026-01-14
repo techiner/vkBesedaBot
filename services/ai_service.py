@@ -2,6 +2,7 @@ import os
 from gigachat import GigaChat
 from gigachat.models import Chat, Messages, MessagesRole
 
+
 def ask(ai_prompt):
     # Инициализация клиента
     giga = GigaChat(

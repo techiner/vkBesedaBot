@@ -3,6 +3,7 @@ import json
 
 PHRASES_FILEPATH = './data/phrases.json'
 
+
 def load_phrases():
     # Если файла нет, создаём его с пустой JSON-структурой
     if not os.path.exists(PHRASES_FILEPATH):
@@ -19,6 +20,7 @@ def load_phrases():
             json.dump({}, f)
         return {}
     
+
 def save_phrases(json_data):
     """
     Сохраняет текст в файл. Если файл существует — дописывает в конец.

@@ -7,4 +7,5 @@ class Commands(str, Enum):
     ADD = 'добавить'
     DELETE = 'удалить'
     PROMPT = 'окейалеша'
+    SUBSCRIBE = 'подписаться'
 
