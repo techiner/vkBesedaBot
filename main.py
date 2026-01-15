@@ -3,7 +3,7 @@ from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from dotenv import load_dotenv
 import os
 from transport.vk_longpoll import longpoll_server
-import transport.vk_schedule as schedule_module  # Импортируем модуль планировщика заданий
+import scheduler.vk_schedule as schedule_module  # Импортируем модуль планировщика заданий
 
 load_dotenv()  # Ищет .env в текущей папке
 

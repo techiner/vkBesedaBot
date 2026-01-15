@@ -1,4 +1,5 @@
 
+import random
 import shlex
 from domain.commands import Commands
 from services import ai_service, phrases_service
@@ -32,7 +33,7 @@ def handle_add(vk, chat_id, args_text: str) -> None:
     
     target, answer = parts
     phrase_database = phrases_store_service.load_phrases()
-    phrase_database[target.lower()] = answer
+    phrase_database[target.lower()] = [*phrase_database[target.lower()], answer]
     phrases_store_service.save_phrases(phrase_database)
     vk_sender.sender(vk, chat_id, f'Добавил "{target}" → "{answer}"')
 
@@ -56,9 +57,9 @@ def handle_delete(vk, chat_id, args_text: str) -> None:
 
 
 def handle_trigger_phrase(vk, chat_id, phrase_text) -> None:
-    answer = phrases_service.find_phrase(phrase_text.lower())
-    if answer:
-        vk_sender.sender(vk, chat_id, answer)
+    answers = phrases_service.find_phrase(phrase_text.lower())
+    if answers and len(answers) > 0:
+        vk_sender.sender(vk, chat_id, random.choice(answers))
 
 
 def handle_okey_alesha(vk, chat_id, ai_prompt) -> None:

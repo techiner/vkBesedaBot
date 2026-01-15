@@ -1,6 +1,4 @@
-from functools import partial
 from itertools import islice
-import threading
 import time
 import schedule
 import csv
@@ -9,8 +7,7 @@ import random
 from transport.vk_sender import sender
 import infra.subscription_store_service as subscription_store_service
 
-
-def job_9am(vk):
+def job_jokes(vk):
     print("Запуск задания в 9:00")
     path = "./data/clean_comedy_gold_ru.csv"
     jokes_count = 2
@@ -41,12 +38,8 @@ def job_9am(vk):
             print(f"[{peer_id} -> chat {chat_id}] {msg}")
 
 
-def scheduler_loop(vk):
-    schedule.every().day.at("09:00").do(lambda: job_9am(vk))
+def scheduler_jokes_loop(vk):
+    schedule.every().day.at("09:00").do(lambda: job_jokes(vk))
     while True:
         schedule.run_pending()
         time.sleep(1)
-
-def start_scheduler(vk):
-    threading.Thread(target=scheduler_loop, args=(vk,), daemon=True).start()
-    print("Планировщик заданий запущен")

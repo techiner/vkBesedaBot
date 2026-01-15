@@ -2,8 +2,7 @@
 .env
 
 # Тестовые данные
-phrases.json
-comedy_subscription.json
+data
 
 # Виртуальное окружение
 .venv/
