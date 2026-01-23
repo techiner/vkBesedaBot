@@ -21,6 +21,8 @@ def get_db_connection():
     """
     conn = sqlite3.connect(settings.DB_PATH)
     conn.row_factory = sqlite3.Row  # Для доступа к колонкам по имени
+    # Включаем поддержку внешних ключей для CASCADE удалений
+    conn.execute("PRAGMA foreign_keys = ON")
     try:
         yield conn
         conn.commit()
@@ -198,7 +200,11 @@ class PhrasesStore:
 
     def delete_phrase(self, phrase_text: str) -> bool:
         """
-        Delete a phrase.
+        Delete a phrase and all its associated responses.
+        
+        Due to FOREIGN KEY constraint with ON DELETE CASCADE,
+        deleting a phrase automatically deletes all related
+        phrase_responses records.
 
         Args:
             phrase_text: Phrase text to delete
@@ -210,22 +216,61 @@ class PhrasesStore:
             with get_db_connection() as conn:
                 cursor = conn.cursor()
                 
-                # Находим фразу
-                cursor.execute("SELECT id FROM phrases WHERE phrase_text = ?", (phrase_text.lower(),))
+                # Находим фразу и проверяем количество связанных ответов
+                cursor.execute("""
+                    SELECT p.id, COUNT(pr.id) as response_count
+                    FROM phrases p
+                    LEFT JOIN phrase_responses pr ON p.id = pr.phrase_id
+                    WHERE p.phrase_text = ?
+                    GROUP BY p.id
+                """, (phrase_text.lower(),))
                 row = cursor.fetchone()
                 
                 if row:
                     phrase_id = row['id']
-                    # Удаление каскадное, так что удалится и из phrase_responses
+                    response_count = row['response_count'] or 0
+                    
+                    # Удаляем фразу - благодаря ON DELETE CASCADE
+                    # автоматически удалятся все связанные phrase_responses
                     cursor.execute("DELETE FROM phrases WHERE id = ?", (phrase_id,))
                     conn.commit()
-                    logger.debug(f"Deleted phrase: {phrase_text}")
+                    logger.debug(f"Deleted phrase '{phrase_text}' with {response_count} associated responses")
                     return True
                 else:
                     return False
                     
         except Exception as e:
             logger.error(f"Error deleting phrase: {e}")
+            raise
+
+    def delete_all_phrases(self) -> int:
+        """
+        Delete all phrases and all their associated responses.
+        
+        Due to FOREIGN KEY constraint with ON DELETE CASCADE,
+        deleting all phrases automatically deletes all related
+        phrase_responses records.
+
+        Returns:
+            Number of deleted phrases
+        """
+        try:
+            with get_db_connection() as conn:
+                cursor = conn.cursor()
+                
+                # Подсчитываем количество фраз перед удалением
+                cursor.execute("SELECT COUNT(*) as count FROM phrases")
+                count = cursor.fetchone()['count']
+                
+                # Удаляем все фразы - благодаря ON DELETE CASCADE
+                # автоматически удалятся все связанные phrase_responses
+                cursor.execute("DELETE FROM phrases")
+                conn.commit()
+                logger.debug(f"Deleted all {count} phrases with all associated responses")
+                return count
+                    
+        except Exception as e:
+            logger.error(f"Error deleting all phrases: {e}")
             raise
 
 
@@ -236,12 +281,12 @@ class SubscriptionsStore:
         """Initialize subscriptions store."""
         ensure_db_exists()
 
-    def load_subscriptions(self, subscription_type: str = "шутки") -> List[int]:
+    def load_subscriptions(self, subscription_type: str = "цитаты") -> List[int]:
         """
         Load subscriptions from database.
 
         Args:
-            subscription_type: Type of subscription (default: "шутки")
+            subscription_type: Type of subscription (default: "цитаты")
 
         Returns:
             List of peer_ids
@@ -263,13 +308,13 @@ class SubscriptionsStore:
             
         return subscriptions
 
-    def save_subscriptions(self, subscriptions: List[int], subscription_type: str = "шутки") -> None:
+    def save_subscriptions(self, subscriptions: List[int], subscription_type: str = "цитаты") -> None:
         """
         Save subscriptions to database.
 
         Args:
             subscriptions: List of peer_ids
-            subscription_type: Type of subscription (default: "шутки")
+            subscription_type: Type of subscription (default: "цитаты")
         """
         try:
             with get_db_connection() as conn:
@@ -292,13 +337,13 @@ class SubscriptionsStore:
             logger.error(f"Error saving subscriptions: {e}")
             raise
 
-    def add_subscription(self, peer_id: int, subscription_type: str = "шутки") -> bool:
+    def add_subscription(self, peer_id: int, subscription_type: str = "цитаты") -> bool:
         """
         Add a single subscription.
 
         Args:
             peer_id: Peer ID to add
-            subscription_type: Type of subscription (default: "шутки")
+            subscription_type: Type of subscription (default: "цитаты")
 
         Returns:
             True if added, False if already exists
@@ -330,13 +375,13 @@ class SubscriptionsStore:
             logger.error(f"Error adding subscription: {e}")
             raise
 
-    def remove_subscription(self, peer_id: int, subscription_type: str = "шутки") -> bool:
+    def remove_subscription(self, peer_id: int, subscription_type: str = "цитаты") -> bool:
         """
         Remove a subscription.
 
         Args:
             peer_id: Peer ID to remove
-            subscription_type: Type of subscription (default: "шутки")
+            subscription_type: Type of subscription (default: "цитаты")
 
         Returns:
             True if removed, False if not found

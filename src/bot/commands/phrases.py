@@ -49,3 +49,16 @@ def handle_delete(vk, chat_id: int, args_text: str) -> None:
     else:
         send_message(vk, chat_id, 'Не нашел у себя этой фразы -_-')
 
+
+def handle_delete_all(vk, chat_id: int, args_text: str) -> None:
+    """
+    Handle delete all phrases command.
+
+    Args:
+        vk: VK API session
+        chat_id: Chat ID
+        args_text: Command arguments (should be empty)
+    """
+    store = PhrasesStore()
+    count = store.delete_all_phrases()
+    send_message(vk, chat_id, f'Удалил все фразы ({count} шт.) и ответы на них')

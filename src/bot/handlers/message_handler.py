@@ -3,7 +3,7 @@
 from bot.vk.utils import is_mention, delete_mention_text
 from bot.utils.text import get_command, get_args_from_command
 from bot.commands.base import Commands
-from bot.commands import help, phrases, subscribe, prompt
+from bot.commands import help, subscribe, prompt, analyze
 from bot.services.phrases_service import find_phrase
 from bot.vk.sender import send_message
 from bot.handlers.errors import handle_error
@@ -39,7 +39,8 @@ def handle_message(vk, event) -> None:
                 prompt.handle_prompt(vk, chat_id, text_without_mention)
         else:
             # Обрабатываем как триггерную фразу
-            _handle_trigger_phrase(vk, chat_id, text)
+            # _handle_trigger_phrase(vk, chat_id, text)
+            pass
 
     except Exception as e:
         handle_error(e, "при обработке сообщения")
@@ -59,14 +60,12 @@ def _handle_command(vk, chat_id: int, peer_id: int, command: Commands, args: str
     match command:
         case Commands.HELP:
             help.handle_help(vk, chat_id)
-        case Commands.ADD:
-            phrases.handle_add(vk, chat_id, args)
-        case Commands.DELETE:
-            phrases.handle_delete(vk, chat_id, args)
         case Commands.SUBSCRIBE:
             subscribe.handle_subscribe(vk, chat_id, peer_id, args)
         case Commands.PROMPT:
             prompt.handle_prompt(vk, chat_id, args)
+        case Commands.ANALYZE:
+            analyze.handle_analyze(vk, chat_id, peer_id, args)
         case _:
             pass
 

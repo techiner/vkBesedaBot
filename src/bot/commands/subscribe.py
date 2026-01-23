@@ -17,18 +17,18 @@ def handle_subscribe(vk, chat_id: int, peer_id: int, args_text: str) -> None:
     """
     parts = shlex.split(args_text.strip())
 
-    if len(parts) != 1 or parts[0].lower() != "шутки":
+    if len(parts) != 1 or parts[0].lower() != "цитаты":
         send_message(
             vk,
             chat_id,
-            'Неправильно! Используй: подписаться "шутки"',
+            'Неправильно! Используй: подписаться "цитаты"',
         )
         return
 
     store = SubscriptionsStore()
     
-    if store.add_subscription(peer_id, "шутки"):
-        send_message(vk, chat_id, "Подписал этот чат на ежедневные шутки 🤡")
+    if store.add_subscription(peer_id, "цитаты"):
+        send_message(vk, chat_id, "Подписал этот чат на ежедневные цитаты 💭")
     else:
-        send_message(vk, chat_id, "Ты уже подписан на мои шутки!")
+        send_message(vk, chat_id, "Ты уже подписан на мои цитаты!")
 

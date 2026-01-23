@@ -8,10 +8,9 @@ class Commands(str, Enum):
     """Available bot commands."""
 
     HELP = 'help'
-    ADD = 'добавить'
-    DELETE = 'удалить'
     PROMPT = 'окейалеша'
     SUBSCRIBE = 'подписаться'
+    ANALYZE = 'анализ'
 
 
 class Command(ABC):

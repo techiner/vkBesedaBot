@@ -4,12 +4,12 @@ from typing import List
 from bot.storage.db_store import SubscriptionsStore
 
 
-def get_subscribers(subscription_type: str = "шутки") -> List[int]:
+def get_subscribers(subscription_type: str = "цитаты") -> List[int]:
     """
     Get list of all subscribers.
 
     Args:
-        subscription_type: Type of subscription (default: "шутки")
+        subscription_type: Type of subscription (default: "цитаты")
 
     Returns:
         List of peer_ids
@@ -18,13 +18,13 @@ def get_subscribers(subscription_type: str = "шутки") -> List[int]:
     return store.load_subscriptions(subscription_type)
 
 
-def add_subscriber(peer_id: int, subscription_type: str = "шутки") -> bool:
+def add_subscriber(peer_id: int, subscription_type: str = "цитаты") -> bool:
     """
     Add a new subscriber.
 
     Args:
         peer_id: Peer ID to add
-        subscription_type: Type of subscription (default: "шутки")
+        subscription_type: Type of subscription (default: "цитаты")
 
     Returns:
         True if added, False if already exists
