@@ -5,6 +5,8 @@ from bot.utils.text import get_command, get_args_from_command
 from bot.commands.base import Commands
 from bot.commands import help, subscribe, prompt, analyze
 from bot.services.phrases_service import find_phrase
+from bot.services.ai_service import ask_ai
+from bot.config.settings import settings
 from bot.vk.sender import send_message
 from bot.handlers.errors import handle_error
 
@@ -18,12 +20,29 @@ def handle_message(vk, event) -> None:
         event: VK bot event
     """
     try:
-        text = event.object.message.get('text', '')
+        message = event.object.message
+        text = message.get('text', '')
         chat_id = event.chat_id
-        peer_id = event.object.message.get('peer_id')
+        peer_id = message.get('peer_id')
 
         if not event.from_chat or not text:
             return
+
+        # Если это ответ на сообщение бота — передаём связку "ответ + оригинал" в AI
+        reply = message.get('reply_message')
+        if reply:
+            reply_from_id = reply.get('from_id')
+            # Сообщения бота в беседе обычно имеют from_id = -GROUP_ID
+            if reply_from_id and abs(reply_from_id) == settings.GROUP_ID:
+                bot_text = reply.get('text', '')
+                combined_prompt = (
+                    "Пользователь отвечает на предыдущее сообщение бота.\n\n"
+                    f"Сообщение пользователя:\n{text}\n\n"
+                    f"Сообщение бота:\n{bot_text}"
+                )
+                answer = ask_ai(combined_prompt)
+                send_message(vk, chat_id, answer)
+                return
 
         # Проверяем упоминание бота
         if is_mention(text):
