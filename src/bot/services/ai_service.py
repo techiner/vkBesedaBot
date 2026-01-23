@@ -35,7 +35,7 @@ def ask_ai(prompt: str) -> str:
     
     try:
         completion = client.chat.completions.create(
-            model="gpt-5-mini",
+            model="grok-4-fast-non-reasoning",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
